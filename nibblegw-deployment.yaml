@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nibblegw-service
+  labels:
+    app: nibblegw
+spec:
+  ports:
+    - port: 5000
+  selector:
+    app: nibblegw
+    tier: frontend
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nibblegw-deployment
+  labels:
+    app: nibblegw
+spec:
+  selector:
+    matchLabels:
+      app: nibblegw
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nibblegw
+        tier: frontend
+    spec:
+      containers:
+        - name: nibblegw
+          image: jptmoore/nibblegw
+          ports:
+            - containerPort: 5000

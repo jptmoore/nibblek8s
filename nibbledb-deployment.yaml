@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nibbledb
+  labels:
+    app: nibbledb
+spec:
+  ports:
+  - port: 8000
+    name: db
+  clusterIP: None
+  selector:
+    app: nibbledb
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+spec:
+  selector:
+    matchLabels:
+      app: nibbledb # has to match .spec.template.metadata.labels
+  serviceName: "nibbledb"
+  replicas: 3 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: nibbledb # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nibbledb
+        image: jptmoore/nibbledb
+        ports:
+        - containerPort: 8000
+          name: db
