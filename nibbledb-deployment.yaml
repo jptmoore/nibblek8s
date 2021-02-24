@@ -6,8 +6,8 @@ metadata:
     app: nibbledb
 spec:
   ports:
-  - port: 8000
-    name: db
+    - port: 8000
+      name: db
   clusterIP: None
   selector:
     app: nibbledb
@@ -19,18 +19,25 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: nibbledb # has to match .spec.template.metadata.labels
+      app: nibbledb
   serviceName: "nibbledb"
-  replicas: 3 # by default is 1
+  replicas: 4
   template:
     metadata:
       labels:
-        app: nibbledb # has to match .spec.selector.matchLabels
+        app: nibbledb
     spec:
-      terminationGracePeriodSeconds: 10
       containers:
-      - name: nibbledb
-        image: jptmoore/nibbledb
-        ports:
-        - containerPort: 8000
-          name: db
+        - name: nibbledb
+          image: jptmoore/nibbledb
+          args: ["--db", "/home/nibble/db"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1000Mi
+            limits:
+              cpu: 1000m
+              memory: 2000Mi
+          ports:
+            - containerPort: 8000
+              name: db
